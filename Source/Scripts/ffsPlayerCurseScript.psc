@@ -10,6 +10,7 @@ FormList Property ffsSelfCurses Auto
 FormList Property ffsTargettedCurses Auto
 
 int curseFormlistCount = 2
+int listToUse = 0
 
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 	if aeCombatState == 1
@@ -36,29 +37,29 @@ Event OnEnterBleedout()
 		FormList chosenList = ChooseCurse()
 		Spell chosenCurse = PickACurse(chosenList)
 		ffsCurseMessage.Show()
-		chosenCurse.Cast(self.GetActorReference(), GetSpellTarget(chosenCurse))
+		chosenCurse.Cast(self.GetActorReference(), GetSpellTarget())
 	EndIf
 EndEvent
 
 Spell Function PickACurse(FormList listOfCurses)
-	int spellToUse = Utility.RandomInt(1, (listOfCurses.GetSize()  - 1))
+	int spellToUse = Utility.RandomInt(0, (listOfCurses.GetSize() - 1))
 	return listOfCurses.GetAt(spellToUse) as Spell
 EndFunction
 
-Actor Function GetSpellTarget(Form spellInQuestion)
-	if ffsSelfCurses.HasForm(spellInQuestion)
+Actor Function GetSpellTarget()
+	if listToUse == 1
 		return self.GetActorReference()
 	EndIf
 	return Game.GetPlayer()
 EndFunction
 
 FormList Function ChooseCurse() 
-	int listToUse = Utility.RandomInt(0, curseFormlistCount)
+	listToUse = Utility.RandomInt(1, curseFormlistCount)
 	FormList chosenList = None
 	if listToUse == 1
-		chosenList = ffsSelfCurses
+		return ffsSelfCurses
 	ElseIf listToUse == 2
-		chosenList = ffsTargettedCurses
+		return ffsTargettedCurses
 	EndIf
 	return chosenList
 EndFunction
